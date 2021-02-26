@@ -7,14 +7,14 @@ const request = indexedDB.open('budget_tracker', 1);
 // on db change store the db changes in budget_tracker db and increment the version number
 request.onupgradeneeded = function(e) {
     const db = e.target.result;
-    db.createObjectStore('budget_tracker', { autoIncrement: true });
+    db.createObjectStore('new_txn', { autoIncrement: true });
 };
 
 // upon successful db creation, save current db info to the global db variable
 request.onsuccess = function(e) {
     db = e.target.result;
     if (navigator.onLine) {
-        // uploadBudgetData();
+        // uploadTxns();
     }
 };
 
@@ -26,7 +26,7 @@ request.onerror = function(e) {
 function saveRecord(record) {
     const transaction = db.transaction(['new_txn'], 'readwrite');
 
-    const txnObjectStore = transaction.txnObjectStore('new_txn');
+    const txnObjectStore = transaction.objectStore('new_txn');
 
     txnObjectStore.add(record);
 }
