@@ -14,7 +14,7 @@ request.onupgradeneeded = function(e) {
 request.onsuccess = function(e) {
     db = e.target.result;
     if (navigator.onLine) {
-        // uploadTxns();
+        uploadTxns();
     }
 };
 
@@ -30,3 +30,42 @@ function saveRecord(record) {
 
     txnObjectStore.add(record);
 }
+
+function uploadTxns() {
+    const transaction = db.transaction(['new_txn'], 'readwrite');
+
+    const txnObjectStore = transaction.objectStore('new_txn');
+
+    const getAll = txnObjectStore.getAll();
+
+    getAll.onsuccess = function() {
+        if (getAll.result.length > 0) {
+            fetch('/api/transaction/bulk', {
+                method: 'POST',
+                body: JSON.stringify(getAll.result),
+                headers: {
+                    Accept: 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(serverResponse => {
+                if (serverResponse.message) {
+                    throw new Error (serverResponse);
+                }
+                const transaction = db.transaction(['new_txn'], 'readwrite');
+
+                const txnObjectStore = transaction.objectStore('new_txn');
+
+                txnObjectStore.clear();
+
+                alert('All saved transactions have been submitted!')
+            })
+            .catch(err => {
+                console.log(err);
+            });    
+        }
+    }
+}
+
+window.addEventListener('online', uploadTxns)
