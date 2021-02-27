@@ -23,6 +23,7 @@ request.onerror = function(e) {
     console.log(e.target.errorCode);
 }
 
+// on post failure saveRecord to indexedDB
 function saveRecord(record) {
     const transaction = db.transaction(['new_txn'], 'readwrite');
 
@@ -31,13 +32,15 @@ function saveRecord(record) {
     txnObjectStore.add(record);
 }
 
+
 function uploadTxns() {
     const transaction = db.transaction(['new_txn'], 'readwrite');
 
     const txnObjectStore = transaction.objectStore('new_txn');
-
+// Get all stored transactions for post request
     const getAll = txnObjectStore.getAll();
 
+// This function will make the post to our main database in Mongo
     getAll.onsuccess = function() {
         if (getAll.result.length > 0) {
             fetch('/api/transaction/bulk', {
@@ -68,4 +71,5 @@ function uploadTxns() {
     }
 }
 
+// When the browser comes back online, post the transactions
 window.addEventListener('online', uploadTxns)
