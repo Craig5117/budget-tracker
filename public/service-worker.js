@@ -1,4 +1,4 @@
-const APP_PREFIX = 'BudgetTracker';
+const APP_PREFIX = 'BudgetTracker-';
 const VERSION = 'version_01';
 const CACHE_NAME = APP_PREFIX + VERSION;
 const FILES_TO_CACHE = [
@@ -36,7 +36,7 @@ self.addEventListener('activate', function (e) {
       cacheKeepList.push(CACHE_NAME);
 
       return Promise.all(
-        keylist.map((key, i) => {
+        keyList.map((key, i) => {
           if (cacheKeepList.indexOf(key) === -1) {
             console.log('deleting cache : ' + keyList[i]);
             return caches.delete(keyList[i]);
