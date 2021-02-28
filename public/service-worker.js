@@ -1,6 +1,7 @@
 const APP_PREFIX = 'BudgetTracker-';
 const VERSION = 'version_01';
 const CACHE_NAME = APP_PREFIX + VERSION;
+const DATA_CACHE_NAME = 'data-cache-version_01';
 const FILES_TO_CACHE = [
   './index.html',
   './css/styles.css',
@@ -49,6 +50,28 @@ self.addEventListener('activate', function (e) {
 });
 
 self.addEventListener('fetch', function (e) {
+    if(e.request.url.includes('/api/')) {
+        e.respondWith(
+            caches
+            .open(DATA_CACHE_NAME)
+            .then(cache => {
+              return fetch(e.request)
+                .then(response => {
+                  // If the response was good, clone it and store it in the cache.
+                  if (response.status === 200) {
+                    cache.put(e.request.url, response.clone());
+                  }
+                  return response;
+                })
+                .catch(err => {
+                  // Since network request failed, get transaction history from the cache.
+                  return cache.match(e.request);
+                });
+            })
+            .catch(err => console.log(err))
+        );
+        return;
+    }
   console.log('fetch request : ' + e.request.url);
   e.respondWith(
     caches.match(e.request).then((request) => {
