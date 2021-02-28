@@ -25,10 +25,11 @@ request.onerror = function(e) {
 
 // on post failure saveRecord to indexedDB
 function saveRecord(record) {
+    // stores collected data to transaction variable
     const transaction = db.transaction(['new_txn'], 'readwrite');
-
+    // created an object store of transaction data
     const txnObjectStore = transaction.objectStore('new_txn');
-
+    // saves transaction object store
     txnObjectStore.add(record);
 }
 
@@ -60,7 +61,7 @@ function uploadTxns() {
                 const transaction = db.transaction(['new_txn'], 'readwrite');
 
                 const txnObjectStore = transaction.objectStore('new_txn');
-
+                // deletes the old stored object on successful post
                 txnObjectStore.clear();
 
                 alert('All saved transactions have been submitted!')

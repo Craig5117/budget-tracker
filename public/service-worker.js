@@ -22,6 +22,7 @@ const FILES_TO_CACHE = [
   './manifest.json',
 ];
 
+// installs the service worker
 self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -32,6 +33,7 @@ self.addEventListener('install', function (e) {
   self.skipWaiting();
 });
 
+// activates service worker
 self.addEventListener('activate', function (e) {
   e.waitUntil(
     caches.keys().then((keyList) => {
@@ -53,6 +55,7 @@ self.addEventListener('activate', function (e) {
   self.clients.claim();
 });
 
+// intercepts fetch requests and caches the response
 self.addEventListener('fetch', function (e) {
   if (e.request.url.includes('/api')) {
     e.respondWith(
