@@ -49,7 +49,8 @@ function uploadTxns() {
                 headers: {
                     Accept: 'application/json, text/plain, */*',
                     'Content-Type': 'application/json'
-                }
+                },
+                credentials: "include"
             })
             .then(response => response.json())
             .then(serverResponse => {

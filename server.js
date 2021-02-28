@@ -16,6 +16,7 @@ app.use(express.json());
 
 app.use(express.static("public"));
 
+// const isDev = process.env.NODE_ENV === "development" ? process.env.MONGODB_URI : process.env.MONGODB_URI ;
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/pizza-hunt', {
   useNewUrlParser: true,
   useFindAndModify: false,

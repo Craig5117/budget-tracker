@@ -1,8 +1,10 @@
+// require('crypto').randomBytes(8).toString('hex')
 const APP_PREFIX = 'BudgetTracker-';
 const VERSION = 'version_01';
 const CACHE_NAME = APP_PREFIX + VERSION;
 const DATA_CACHE_NAME = 'data-cache-version_01';
 const FILES_TO_CACHE = [
+  '/',
   './index.html',
   './css/styles.css',
   'https://cdn.jsdelivr.net/npm/chart.js@2.8.0',
@@ -16,7 +18,8 @@ const FILES_TO_CACHE = [
   './icons/icon-384x384.png',
   './icons/icon-512x512.png',
   './js/idb.js',
-  './js/index.js'
+  './js/index.js',
+  './manifest.json',
 ];
 
 self.addEventListener('install', function (e) {
@@ -51,29 +54,28 @@ self.addEventListener('activate', function (e) {
 });
 
 self.addEventListener('fetch', function (e) {
-    if(e.request.url.includes('/api/')) {
-        e.respondWith(
-            caches
-            .open(DATA_CACHE_NAME)
-            .then(cache => {
-              return fetch(e.request)
-                .then(response => {
-                  // If the response was good, clone it and store it in the cache.
-                  if (response.status === 200) {
-                    cache.put(e.request.url, response.clone());
-                  }
-                  return response;
-                })
-                .catch(err => {
-                  // Since network request failed, get transaction history from the cache.
-                  console.log('responding with cache : ' + e.request.url)
-                  return cache.match(e.request);
-                });
+  if (e.request.url.includes('/api')) {
+    e.respondWith(
+      caches
+        .open(DATA_CACHE_NAME)
+        .then((cache) => {
+          return fetch(e.request)
+            .then((response) => {
+              // If the response was good, clone it and store it in the cache.
+              if (response.status === 200) {
+                cache.put(e.request.url, response.clone());
+              }
+              return response;
             })
-            .catch(err => console.log(err))
-        );
-        return;
-    }
+            .catch((err) => {
+              // Since network request failed, get transaction history from the cache.
+              console.log('responding with cache : ' + e.request.url);
+              return cache.match(e.request);
+            });
+        })
+    );
+    return;
+  }
   console.log('fetch request : ' + e.request.url);
   e.respondWith(
     caches.match(e.request).then((request) => {
