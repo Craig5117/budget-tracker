@@ -26,6 +26,7 @@ self.addEventListener('install', function (e) {
       return cache.addAll(FILES_TO_CACHE);
     })
   );
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', function (e) {
@@ -65,6 +66,7 @@ self.addEventListener('fetch', function (e) {
                 })
                 .catch(err => {
                   // Since network request failed, get transaction history from the cache.
+                  console.log('responding with cache : ' + e.request.url)
                   return cache.match(e.request);
                 });
             })
